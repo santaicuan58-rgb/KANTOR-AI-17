@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kantor AI — 17 Karyawan</title>
+<style>
+:root{--green:#123d2d;--green2:#176044;--bg:#f3f6f4;--card:#fff;--ink:#17231d;--muted:#718078;--line:#e3eae5;--orange:#e99b32;--blue:#3979c7;--red:#d84d4d;--shadow:0 8px 24px #163c2810}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:650}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.sidebar{background:#102f24;color:#eaf4ee;padding:22px 16px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 24px}.brandmark{width:38px;height:38px;border-radius:12px;background:#2b7655;display:grid;place-items:center;font-size:20px}.brand strong{display:block;font-size:15px;letter-spacing:.3px}.brand small{color:#a9c5b6}
+.navlabel{font-size:10px;letter-spacing:1.3px;color:#83a897;margin:17px 10px 7px}.nav button{display:flex;width:100%;text-align:left;align-items:center;gap:11px;background:transparent;color:#c7d9cf;padding:11px 12px;margin:3px 0;border-radius:10px}.nav button.active,.nav button:hover{background:#24523e;color:white}.nav .ico{width:20px;text-align:center}
+.sidebarfoot{position:absolute;bottom:18px;left:18px;right:18px;background:#1b4433;border:1px solid #315d49;border-radius:12px;padding:12px;color:#d9e9df;font-size:12px}
+main{min-width:0;padding:26px 30px 48px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.eyebrow{color:var(--green2);font-weight:750;font-size:11px;letter-spacing:1.2px}.topbar h1{margin:4px 0 0;font-size:25px;letter-spacing:-.6px}.topright{display:flex;align-items:center;gap:10px}.owner{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:9px}.avatar{width:30px;height:30px;background:#dcebe2;color:var(--green);border-radius:50%;display:grid;place-items:center;font-weight:800}
+.page{display:none}.page.active{display:block}.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:var(--shadow)}.stathead{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.statnum{font-size:27px;font-weight:800;margin:10px 0 2px;letter-spacing:-.8px}.statnote{font-size:11px;color:var(--muted)}.staticon{width:34px;height:34px;border-radius:10px;background:#eaf3ed;display:grid;place-items:center}
+.two{grid-template-columns:1.35fr 1fr}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.sectionhead h2{font-size:15px;margin:0}.muted{color:var(--muted)}.pill{font-size:10px;padding:4px 8px;border-radius:30px;background:#eef4f0;color:#436251;font-weight:750}.pill.orange{background:#fff3df;color:#9a641b}.pill.blue{background:#eaf2ff;color:#3265a4}.pill.red{background:#ffeded;color:#a73d3d}
+.command{background:linear-gradient(120deg,#123d2d,#1d6447);color:white;border-radius:17px;padding:20px;margin-bottom:16px}.command h2{margin:0 0 5px;font-size:17px}.command p{margin:0 0 14px;color:#d0e2d7;font-size:12px}.command textarea{width:100%;min-height:84px;border:1px solid #5a826d;background:#ffffff;color:#17231d;border-radius:11px;padding:12px;resize:vertical;outline:none}.commandrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.btn-primary{background:#d8f0df;color:#17442e}.btn-light{background:#edf3ef;color:#234a36}.btn-dark{background:#174a34;color:#fff}.btn-outline{background:white;border:1px solid var(--line);color:#355442}.btn-danger{background:#ffeded;color:#a43c3c}.task{border:1px solid var(--line);border-radius:12px;padding:12px;margin:9px 0}.tasktop{display:flex;justify-content:space-between;gap:10px}.task strong{font-size:13px}.task p{margin:6px 0;color:var(--muted);font-size:12px}.taskactions{display:flex;gap:7px;margin-top:10px}.taskactions button{font-size:11px;padding:7px 10px}.staffrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.staffrow:last-child{border:0}.staffavatar{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#edf4ef;font-weight:800;color:#24553c}.staffmeta{flex:1;min-width:0}.staffmeta strong{display:block;font-size:12px}.staffmeta small{color:var(--muted);font-size:11px}.dot{width:7px;height:7px;border-radius:50%;background:#36a66a;display:inline-block;margin-right:5px}.bar{height:7px;background:#edf1ee;border-radius:9px;overflow:hidden;margin-top:7px}.bar span{display:block;height:100%;background:#39865d;border-radius:9px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.toolbar input,.toolbar select,.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:white;color:var(--ink);outline:none}.toolbar input{max-width:270px;width:100%}.deptgrid{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.dept{padding:15px}.dept .count{font-size:23px;font-weight:800;margin:5px 0}.employeegrid{grid-template-columns:repeat(3,minmax(0,1fr))}.employee{padding:15px}.employeehead{display:flex;gap:10px;align-items:center}.employee .staffavatar{width:42px;height:42px}.employee h3{font-size:13px;margin:0}.employee p{font-size:11px;color:var(--muted);margin:3px 0}.employeefoot{display:flex;justify-content:space-between;align-items:center;margin-top:13px;font-size:11px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}.field label{font-size:12px;font-weight:700}.field textarea{min-height:90px}.platforms{display:flex;gap:8px;flex-wrap:wrap}.platform{border:1px solid var(--line);background:white;border-radius:10px;padding:9px 12px;font-size:12px}.platform.selected{border-color:#43815d;background:#edf7f0;color:#1c5939}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:12px}.notice{border:1px solid #f1d9a9;background:#fff8e9;color:#78551b;border-radius:12px;padding:12px;font-size:12px;margin:12px 0}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}.table th{color:var(--muted);font-weight:700}.targetbox{background:#f1f7f3;border-radius:12px;padding:14px;margin-top:12px}.targetline{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}
+.modalback{position:fixed;inset:0;background:#10251bcc;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modalback.show{display:flex}.modal{width:min(560px,100%);background:white;border-radius:18px;padding:20px;max-height:90vh;overflow:auto}.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead h2{margin:0;font-size:17px}.close{background:#f0f3f1;padding:7px 10px}.toast{position:fixed;bottom:20px;right:20px;background:#173e2d;color:white;padding:12px 16px;border-radius:11px;display:none;z-index:8;box-shadow:var(--shadow)}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}.employeegrid{grid-template-columns:repeat(2,1fr)}.deptgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.app{display:block}.sidebar{height:auto;position:relative;padding:12px}.brand{padding:3px 5px 10px}.nav{display:flex;overflow:auto;gap:4px}.navlabel,.sidebarfoot{display:none}.nav button{width:auto;white-space:nowrap;padding:9px 11px;font-size:12px}.nav button .ico{display:none}main{padding:18px 14px 35px}.topbar{align-items:flex-start}.topbar h1{font-size:21px}.topright .owner span:last-child{display:none}.two{grid-template-columns:1fr}.employeegrid{grid-template-columns:1fr 1fr}.toolbar{align-items:stretch;flex-direction:column}.toolbar input{max-width:none}.commandrow{align-items:stretch;flex-direction:column}.commandrow button{width:100%}}
+@media(max-width:420px){.employeegrid{grid-template-columns:1fr}.stats{gap:9px}.card{padding:13px}.statnum{font-size:23px}}
+
+.workflow-list{display:grid;gap:12px}.workflow-card{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff}.workflow-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.workflow-title{font-size:13px;font-weight:750}.workflow-sub{font-size:11px;color:var(--muted);margin-top:5px}.workflow-progress{height:8px;background:#edf1ee;border-radius:10px;overflow:hidden;margin:13px 0 10px}.workflow-progress span{height:100%;display:block;background:linear-gradient(90deg,#39865d,#75b88b);border-radius:10px}.workflow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.workflow-step{font-size:10px;color:#849188;text-align:center}.workflow-step b{display:block;width:19px;height:19px;border-radius:50%;background:#edf1ee;color:#718078;margin:0 auto 5px;line-height:19px}.workflow-step.done{color:#28734b;font-weight:700}.workflow-step.done b{background:#dff1e5;color:#21633e}.workflow-step.current{color:#9b641b;font-weight:800}.workflow-step.current b{background:#fff0d5;color:#9b641b}.workflow-actions{display:flex;gap:7px;margin-top:12px}.workflow-actions button{font-size:11px;padding:7px 10px}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="brandmark">✦</div><div><strong>KANTOR AI</strong><small>17 Digital Employees</small></div></div>
+ <div class="navlabel">WORKSPACE</div>
+ <nav class="nav">
+  <button class="active" data-page="dashboard"><span class="ico">▦</span>Dashboard</button>
+  <button data-page="employees"><span class="ico">♙</span>Karyawan AI</button>
+  <button data-page="projects"><span class="ico">◴</span>Proses Proyek</button>
+  <button data-page="tasks"><span class="ico">☷</span>Perintah & Tugas</button>
+  <button data-page="approval"><span class="ico">✓</span>Approval Center</button>
+  <button data-page="products"><span class="ico">◇</span>Riset Produk</button>
+  <button data-page="studio"><span class="ico">▣</span>Studio Konten</button>
+  <button data-page="calendar"><span class="ico">▦</span>Kalender Publikasi</button>
+  <button data-page="sales"><span class="ico">↗</span>Sales & Laporan</button>
+ </nav>
+ <div class="sidebarfoot"><b>Mode OWNER</b><br>Semua publikasi dan tindakan eksternal menunggu persetujuan Anda.</div>
+</aside>
+<main>
+ <header class="topbar"><div><div class="eyebrow">OWNER CONTROL CENTER</div><h1 id="pageTitle">Dashboard Kantor</h1></div><div class="topright"><div class="owner"><div class="avatar">O</div><span><b>OWNER</b><br><small class="muted">Administrator</small></span></div></div></header>
+
+ <section class="page active" id="dashboard">
+  <div class="command">
+   <h2>Berikan perintah kepada kantor AI</h2><p>Tulis tujuan Anda. Sistem demo akan mengubahnya menjadi tugas dan membagikannya ke departemen terkait.</p>
+   <textarea id="ownerCommand" placeholder="Contoh: Riset 10 produk affiliate potensial, pilih 3 terbaik, buat konsep video TikTok dan siapkan untuk saya review..."></textarea>
+   <div class="commandrow"><small style="color:#d0e2d7">Perintah akan masuk ke antrean kerja.</small><button class="btn-primary" onclick="submitCommand()">Kirim Perintah →</button></div>
+  </div>
+  <div class="grid stats">
+   <div class="card"><div class="stathead"><span>Total karyawan AI</span><span class="staticon">♙</span></div><div class="statnum">17</div><div class="statnote">4 departemen aktif</div></div>
+   <div class="card"><div class="stathead"><span>Tugas berjalan</span><span class="staticon">◷</span></div><div class="statnum" id="runningCount">0</div><div class="statnote">Dalam antrean demo</div></div>
+   <div class="card"><div class="stathead"><span>Menunggu approval</span><span class="staticon">✓</span></div><div class="statnum" id="approvalCount">0</div><div class="statnote">Perlu keputusan OWNER</div></div>
+   <div class="card"><div class="stathead"><span>Omzet tercatat</span><span class="staticon">↗</span></div><div class="statnum">Rp0</div><div class="statnote">Belum terhubung ke data toko</div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><div class="sectionhead"><div><h2>Pelacakan proses proyek</h2><div class="muted" style="font-size:11px">Pantau tahap pekerjaan dari dibuat sampai siap diperiksa OWNER</div></div><button class="btn-outline" onclick="showPage('projects')">Lihat semua</button></div><div id="dashboardWorkflows" class="workflow-list"><div class="empty">Belum ada proyek berjalan.</div></div></div>
+  <div class="grid two">
+   <div class="card"><div class="sectionhead"><h2>Aktivitas & tugas terbaru</h2><button class="btn-outline" onclick="showPage('tasks')">Lihat semua</button></div><div id="recentTasks"><div class="empty">Belum ada tugas. Kirim perintah pertama Anda di atas.</div></div></div>
+   <div class="card"><div class="sectionhead"><h2>Struktur departemen</h2><span class="pill">17 posisi</span></div><div id="deptSummary"></div><div class="targetbox"><div class="targetline"><b>Target omzet bulanan</b><b>Rp100.000.000</b></div><div class="bar"><span style="width:0%"></span></div><small class="muted">Target bisnis, bukan jaminan pendapatan.</small></div></div>
+  </div>
+  <div class="notice">Versi awal ini adalah prototipe antarmuka dan alur persetujuan. AI belum benar-benar melakukan riset, membuat video, mengakses akun, memposting, membalas komentar, atau mengambil data penjualan sampai backend AI dan integrasi resmi dihubungkan.</div>
+ </section>
+
+ <section class="page" id="employees">
+  <div class="toolbar"><div><b>17 karyawan digital</b><div class="muted" style="font-size:12px">Struktur dan tanggung jawab setiap posisi</div></div><input id="employeeSearch" placeholder="Cari nama atau jabatan..." oninput="renderEmployees()"></div>
+  <div class="grid deptgrid" id="deptCards"></div><div class="grid employeegrid" id="employeeCards"></div>
+ </section>
+
+ <section class="page" id="projects">
+  <div class="toolbar"><div><b>Proses pembuatan proyek</b><div class="muted" style="font-size:12px">Owner dapat melihat posisi setiap proyek</div></div><button class="btn-dark" onclick="showPage('dashboard')">＋ Buat proyek dari perintah</button></div>
+  <div class="notice">Setiap proyek melewati 4 tahap. Di prototipe ini, tahap diperbarui manual untuk simulasi. Dalam versi produksi, agen AI akan memperbarui status saat pekerjaan benar-benar berjalan.</div>
+  <div id="workflowList" class="workflow-list"><div class="card empty">Belum ada proyek.</div></div>
+ </section>
+ <section class="page" id="tasks">
+  <div class="toolbar"><div><b>Perintah & tugas</b><div class="muted" style="font-size:12px">Daftar pekerjaan yang diberikan OWNER</div></div><button class="btn-dark" onclick="showPage('dashboard')">＋ Perintah baru</button></div>
+  <div id="allTasks"></div>
+ </section>
+
+ <section class="page" id="approval">
+  <div class="toolbar"><div><b>Approval Center</b><div class="muted" style="font-size:12px">Periksa hasil sebelum tindakan eksternal</div></div><span class="pill orange" id="approvalPill">0 menunggu</span></div>
+  <div id="approvalList"><div class="empty">Belum ada pekerjaan yang menunggu approval.</div></div>
+  <div class="notice">Persetujuan di sini hanya mengubah status pada prototipe lokal. Tombol ini belum menerbitkan konten ke Instagram, TikTok, atau Shopee.</div>
+ </section>
+
+ <section class="page" id="products">
+  <div class="toolbar"><div><b>Ruang riset produk</b><div class="muted" style="font-size:12px">Tempat shortlist produk affiliate</div></div><button class="btn-dark" onclick="openProductModal()">＋ Tambah produk</button></div>
+  <div class="notice">Belum terhubung ke katalog atau API affiliate. Masukkan data produk secara manual untuk menguji alur penilaian dan approval.</div>
+  <div class="card tablewrap"><table class="table"><thead><tr><th>Produk</th><th>Platform</th><th>Harga</th><th>Komisi</th><th>Status</th></tr></thead><tbody id="productRows"><tr><td colspan="5" class="empty">Belum ada produk riset.</td></tr></tbody></table></div>
+ </section>
+
+ <section class="page" id="studio">
+  <div class="toolbar"><div><b>Studio konten</b><div class="muted" style="font-size:12px">Brief produksi untuk tim kreatif</div></div></div>
+  <div class="grid two">
+   <div class="card"><h2 style="font-size:15px;margin-top:0">Buat brief konten</h2>
+    <div class="field"><label>Nama produk / kampanye</label><input id="briefProduct" placeholder="Contoh: Botol minum portable"></div>
+    <div class="field"><label>Platform</label><div class="platforms"><button class="platform selected" data-platform="TikTok" onclick="pickPlatform(this)">TikTok</button><button class="platform" data-platform="Instagram" onclick="pickPlatform(this)">Instagram</button><button class="platform" data-platform="Shopee Affiliate" onclick="pickPlatform(this)">Shopee Affiliate</button></div></div>
+    <div class="field"><label>Tujuan / arahan kreatif</label><textarea id="briefGoal" placeholder="Contoh: video 30 detik, gaya UGC, tonjolkan manfaat utama..."></textarea></div>
+    <button class="btn-dark" onclick="createBrief()">Kirim brief ke tim kreatif</button>
+   </div>
+   <div class="card"><h2 style="font-size:15px;margin-top:0">Antrean produksi</h2><div id="briefQueue" class="empty">Belum ada brief konten.</div></div>
+  </div>
+  <div class="notice">Generator gambar/video AI dan penyimpanan aset belum terpasang. Brief akan menjadi tugas untuk ditangani setelah mesin produksi diintegrasikan.</div>
+ </section>
+
+ <section class="page" id="calendar">
+  <div class="toolbar"><div><b>Kalender publikasi</b><div class="muted" style="font-size:12px">Rencana konten yang menunggu penjadwalan</div></div></div>
+  <div class="card"><div class="empty">Belum ada jadwal publikasi. Konten yang sudah disetujui dapat dijadwalkan setelah koneksi platform tersedia.</div></div>
+  <div class="notice">Jadwal tidak akan dipublikasikan otomatis dalam versi ini.</div>
+ </section>
+
+ <section class="page" id="sales">
+  <div class="toolbar"><div><b>Sales & laporan</b><div class="muted" style="font-size:12px">Pantau target, omzet, komisi, dan aktivitas harian</div></div><button class="btn-outline" onclick="openSalesModal()">＋ Catat penjualan</button></div>
+  <div class="grid stats">
+   <div class="card"><div class="stathead">Omzet</div><div class="statnum" id="salesRevenue">Rp0</div><div class="statnote">Input manual sementara</div></div>
+   <div class="card"><div class="stathead">Komisi</div><div class="statnum" id="salesCommission">Rp0</div><div class="statnote">Input manual sementara</div></div>
+   <div class="card"><div class="stathead">Transaksi</div><div class="statnum" id="salesOrders">0</div><div class="statnote">Tercatat di browser ini</div></div>
+   <div class="card"><div class="stathead">Target omzet</div><div class="statnum">Rp100 jt</div><div class="statnote">Target bulanan</div></div>
+  </div>
+  <div class="card"><div class="sectionhead"><h2>Catatan penjualan</h2></div><div id="salesRows" class="empty">Belum ada catatan penjualan.</div></div>
+  <div class="notice">Angka penjualan tidak otomatis berasal dari marketplace. Integrasi data toko/affiliate diperlukan untuk laporan aktual.</div>
+ </section>
+</main>
+</div>
+
+<div class="modalback" id="modal"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Tambah data</h2><button class="close" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const departments=[
+ {name:'HRD',count:2,color:'#2d8757',desc:'Pengelolaan tim & evaluasi'},
+ {name:'Tim Kreatif',count:5,color:'#3979c7',desc:'Ide, desain, video & copywriting'},
+ {name:'Tim Admin',count:4,color:'#c18128',desc:'Data, jadwal & komunitas'},
+ {name:'Tim Sales',count:6,color:'#8757b6',desc:'Produk, kampanye & konversi'}
+];
+const employees=[
+ ['01','Direktur Operasional AI','HRD','Koordinasi target, prioritas dan pembagian kerja'],
+ ['02','People & Performance AI','HRD','Evaluasi tugas, KPI dan beban kerja'],
+ ['03','Creative Director AI','Tim Kreatif','Mengatur konsep dan standar kreatif'],
+ ['04','Trend Researcher AI','Tim Kreatif','Riset tren, audiens dan ide konten'],
+ ['05','Copywriter AI','Tim Kreatif','Caption, hook, skrip dan CTA'],
+ ['06','Visual Designer AI','Tim Kreatif','Desain visual, thumbnail dan materi grafis'],
+ ['07','Video Producer AI','Tim Kreatif','Brief, storyboard dan produksi video'],
+ ['08','Admin Produk AI','Tim Admin','Input dan pembaruan data produk'],
+ ['09','Social Media Admin AI','Tim Admin','Kalender, unggahan dan administrasi akun'],
+ ['10','Community Manager AI','Tim Admin','Draft balasan komentar dan pesan'],
+ ['11','Reporting Analyst AI','Tim Admin','Rekap aktivitas dan laporan'],
+ ['12','Sales Strategist AI','Tim Sales','Strategi penjualan dan target'],
+ ['13','Affiliate Product Hunter AI','Tim Sales','Menemukan produk affiliate potensial'],
+ ['14','Market Analyst AI','Tim Sales','Harga, kompetitor dan permintaan'],
+ ['15','Daily Sales Agent AI 1','Tim Sales','Petugas kampanye dan penjualan harian'],
+ ['16','Daily Sales Agent AI 2','Tim Sales','Petugas kampanye dan penjualan harian'],
+ ['17','Conversion Optimizer AI','Tim Sales','Analisis performa dan optimasi konversi']
+];
+let tasks=JSON.parse(localStorage.getItem('kai_tasks')||'[]');
+let products=JSON.parse(localStorage.getItem('kai_products')||'[]');
+let sales=JSON.parse(localStorage.getItem('kai_sales')||'[]');
+let briefs=JSON.parse(localStorage.getItem('kai_briefs')||'[]');
+let workflows=JSON.parse(localStorage.getItem('kai_workflows')||'[]');
+let selectedPlatform='TikTok';
+const titles={dashboard:'Dashboard Kantor',projects:'Proses Proyek',employees:'Karyawan AI',tasks:'Perintah & Tugas',approval:'Approval Center',products:'Riset Produk',studio:'Studio Konten',calendar:'Kalender Publikasi',sales:'Sales & Laporan'};
+function save(){localStorage.setItem('kai_tasks',JSON.stringify(tasks));localStorage.setItem('kai_products',JSON.stringify(products));localStorage.setItem('kai_sales',JSON.stringify(sales));localStorage.setItem('kai_briefs',JSON.stringify(briefs));localStorage.setItem('kai_workflows',JSON.stringify(workflows));}
+function money(n){return 'Rp'+Number(n||0).toLocaleString('id-ID')}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2400)}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===p));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));document.getElementById('pageTitle').textContent=titles[p];renderAll();window.scrollTo(0,0)}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function renderDepartments(){document.getElementById('deptSummary').innerHTML=departments.map(d=>`<div class="staffrow"><div class="staffavatar">${d.name==='Tim Kreatif'?'✦':d.name==='Tim Admin'?'▤':d.name==='Tim Sales'?'↗':'♙'}</div><div class="staffmeta"><strong>${d.name}</strong><small>${d.desc}</small></div><span class="pill">${d.count} orang</span></div>`).join('')}
+function renderEmployees(){let q=(document.getElementById('employeeSearch')?.value||'').toLowerCase();document.getElementById('deptCards').innerHTML=departments.map(d=>`<div class="card dept"><div class="muted" style="font-size:12px">${d.name}</div><div class="count">${d.count} karyawan</div><div class="muted" style="font-size:11px">${d.desc}</div></div>`).join('');document.getElementById('employeeCards').innerHTML=employees.filter(e=>e.join(' ').toLowerCase().includes(q)).map(e=>`<div class="card employee"><div class="employeehead"><div class="staffavatar">${e[0]}</div><div><h3>${e[1]}</h3><p>${e[2]}</p></div></div><p style="margin-top:12px">${e[3]}</p><div class="employeefoot"><span><i class="dot"></i>Terdaftar</span><span>AI-${e[0]}</span></div></div>`).join('')}
+function submitCommand(){let v=document.getElementById('ownerCommand').value.trim();if(!v){toast('Tulis perintah terlebih dahulu.');return}let dept=v.toLowerCase().includes('konten')||v.toLowerCase().includes('video')||v.toLowerCase().includes('instagram')?'Tim Kreatif':v.toLowerCase().includes('produk')||v.toLowerCase().includes('jualan')||v.toLowerCase().includes('sales')?'Tim Sales':'HRD';let projectId=Date.now();let pic=dept==='Tim Kreatif'?'Creative Director AI':dept==='Tim Sales'?'Sales Strategist AI':'Direktur Operasional AI';tasks.unshift({id:projectId,title:v,dept,owner:pic,status:'Diproses',date:new Date().toLocaleString('id-ID'),detail:'Perintah diterima. Menunggu proses kerja agen AI.'});workflows.unshift({id:projectId,title:v,dept,owner:pic,stage:0,created:new Date().toLocaleString('id-ID'),updated:new Date().toLocaleString('id-ID')});document.getElementById('ownerCommand').value='';save();renderAll();toast('Perintah masuk ke antrean tugas.')}
+function taskHTML(t){return `<div class="task"><div class="tasktop"><strong>${esc(t.title)}</strong><span class="pill ${t.status==='Menunggu approval'?'orange':t.status==='Disetujui'?'blue':''}">${t.status}</span></div><p>${t.dept} · Penanggung jawab: ${t.owner} · ${t.date}</p><p>${esc(t.detail||'')}</p>${t.status==='Menunggu approval'?`<div class="taskactions"><button class="btn-dark" onclick="approve(${t.id})">Approve</button><button class="btn-danger" onclick="reject(${t.id})">Reject</button></div>`:''}</div>`}
+function renderTasks(){let recent=tasks.slice(0,4);document.getElementById('recentTasks').innerHTML=recent.length?recent.map(taskHTML).join(''):'<div class="empty">Belum ada tugas. Kirim perintah pertama Anda di atas.</div>';document.getElementById('allTasks').innerHTML=tasks.length?tasks.map(taskHTML).join(''):'<div class="card empty">Belum ada perintah atau tugas.</div>'}
+function renderApproval(){let pending=tasks.filter(t=>t.status==='Menunggu approval');document.getElementById('approvalCount').textContent=pending.length;document.getElementById('approvalPill').textContent=pending.length+' menunggu';document.getElementById('approvalList').innerHTML=pending.length?pending.map(taskHTML).join(''):'<div class="card empty">Belum ada pekerjaan yang menunggu approval.</div>'}
+function approve(id){let t=tasks.find(x=>x.id===id);if(t){t.status='Disetujui';let w=workflows.find(x=>x.id===id);if(w){w.stage=3;w.updated=new Date().toLocaleString('id-ID')}save();renderAll();toast('Persetujuan dicatat di prototipe.')} }
+function reject(id){let t=tasks.find(x=>x.id===id);if(t){t.status='Ditolak';save();renderAll();toast('Tugas ditolak.')} }
+function openProductModal(){modal('Tambah produk riset',`<div class="field"><label>Nama produk</label><input id="pname"></div><div class="field"><label>Platform</label><select id="pplatform"><option>TikTok Affiliate</option><option>Shopee Affiliate</option><option>Instagram</option></select></div><div class="field"><label>Harga (Rp)</label><input id="pprice" type="number" min="0"></div><div class="field"><label>Komisi perkiraan (Rp)</label><input id="pcomm" type="number" min="0"></div><button class="btn-dark" onclick="addProduct()">Simpan produk</button>`)}
+function addProduct(){let n=document.getElementById('pname').value.trim();if(!n){toast('Nama produk wajib diisi.');return}products.unshift({name:n,platform:document.getElementById('pplatform').value,price:+document.getElementById('pprice').value||0,commission:+document.getElementById('pcomm').value||0});save();closeModal();renderAll();toast('Produk ditambahkan.')}
+function renderProducts(){document.getElementById('productRows').innerHTML=products.length?products.map(p=>`<tr><td><b>${esc(p.name)}</b></td><td>${p.platform}</td><td>${money(p.price)}</td><td>${money(p.commission)}</td><td><span class="pill orange">Perlu review</span></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Belum ada produk riset.</td></tr>'}
+function pickPlatform(el){document.querySelectorAll('.platform').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');selectedPlatform=el.dataset.platform}
+function createBrief(){let p=document.getElementById('briefProduct').value.trim(),g=document.getElementById('briefGoal').value.trim();if(!p||!g){toast('Isi produk dan arahan kreatif.');return}let bid=Date.now();briefs.unshift({p,g,platform:selectedPlatform,date:new Date().toLocaleString('id-ID')});tasks.unshift({id:bid,title:'Produksi konten: '+p,dept:'Tim Kreatif',owner:'Creative Director AI',status:'Diproses',date:new Date().toLocaleString('id-ID'),detail:g+' | Platform: '+selectedPlatform});workflows.unshift({id:bid,title:'Produksi konten: '+p,dept:'Tim Kreatif',owner:'Creative Director AI',stage:0,created:new Date().toLocaleString('id-ID'),updated:new Date().toLocaleString('id-ID')});save();document.getElementById('briefProduct').value='';document.getElementById('briefGoal').value='';renderAll();toast('Brief dikirim ke antrean tim kreatif.')}
+function renderBriefs(){document.getElementById('briefQueue').innerHTML=briefs.length?briefs.map(b=>`<div class="task"><b>${esc(b.p)}</b><p>${b.platform} · ${b.date}</p><p>${esc(b.g)}</p></div>`).join(''):'<div class="empty">Belum ada brief konten.</div>'}
+function openSalesModal(){modal('Catat penjualan',`<div class="field"><label>Nama produk / sumber</label><input id="sname"></div><div class="field"><label>Omzet (Rp)</label><input id="srev" type="number" min="0"></div><div class="field"><label>Komisi (Rp)</label><input id="scom" type="number" min="0"></div><div class="field"><label>Jumlah transaksi</label><input id="sorders" type="number" min="1" value="1"></div><button class="btn-dark" onclick="addSale()">Simpan penjualan</button>`)}
+function addSale(){let n=document.getElementById('sname').value.trim();if(!n){toast('Isi nama produk atau sumber.');return}sales.unshift({name:n,revenue:+document.getElementById('srev').value||0,commission:+document.getElementById('scom').value||0,orders:+document.getElementById('sorders').value||1,date:new Date().toLocaleDateString('id-ID')});save();closeModal();renderAll();toast('Penjualan dicatat.')}
+function renderSales(){let rev=sales.reduce((a,x)=>a+x.revenue,0),com=sales.reduce((a,x)=>a+x.commission,0),ord=sales.reduce((a,x)=>a+x.orders,0);document.getElementById('salesRevenue').textContent=money(rev);document.getElementById('salesCommission').textContent=money(com);document.getElementById('salesOrders').textContent=ord;document.getElementById('salesRows').innerHTML=sales.length?`<div class="tablewrap"><table class="table"><thead><tr><th>Tanggal</th><th>Produk / sumber</th><th>Omzet</th><th>Komisi</th><th>Transaksi</th></tr></thead><tbody>${sales.map(s=>`<tr><td>${s.date}</td><td>${esc(s.name)}</td><td>${money(s.revenue)}</td><td>${money(s.commission)}</td><td>${s.orders}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Belum ada catatan penjualan.</div>'}
+function modal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function workflowCard(w,controls=true){
+ const names=['Project dibuat','Proses pembuatan','Hampir selesai','Tugas sudah siap'];
+ const notes=['Perintah diterima dan proyek terdaftar','Tim terkait sedang mengerjakan tugas','Pemeriksaan akhir dan penyempurnaan','Hasil siap diperiksa dan disetujui OWNER'];
+ const pct=[10,45,80,100][w.stage]||10;
+ return `<div class="workflow-card"><div class="workflow-top"><div><div class="workflow-title">${esc(w.title)}</div><div class="workflow-sub">${w.dept} · PIC: ${w.owner}</div></div><span class="pill ${w.stage===3?'blue':w.stage===2?'orange':''}">${names[w.stage]}</span></div><div class="workflow-progress"><span style="width:${pct}%"></span></div><div class="workflow-steps">${names.map((s,i)=>`<div class="workflow-step ${i<w.stage?'done':i===w.stage?'current':''}"><b>${i<w.stage?'✓':i+1}</b>${s}</div>`).join('')}</div><div class="workflow-sub">${notes[w.stage]} · Dibuat: ${w.created} · Update: ${w.updated}</div>${controls&&w.stage<3?`<div class="workflow-actions"><button class="btn-outline" onclick="advanceWorkflow(${w.id})">${['Mulai proses','Tandai hampir selesai','Tandai tugas siap'][w.stage]} →</button></div>`:w.stage===3?'<div class="workflow-sub" style="color:#28734b;font-weight:750">✓ Hasil siap masuk Approval Center</div>':''}</div>`;
+}
+function renderWorkflows(){
+ const dash=document.getElementById('dashboardWorkflows'),list=document.getElementById('workflowList');
+ const active=workflows.filter(w=>w.stage<3).slice(0,3);
+ if(dash)dash.innerHTML=active.length?active.map(w=>workflowCard(w,false)).join(''):'<div class="empty">Belum ada proyek berjalan.</div>';
+ if(list)list.innerHTML=workflows.length?workflows.map(w=>workflowCard(w,true)).join(''):'<div class="card empty">Belum ada proyek. Kirim perintah dari dashboard.</div>';
+}
+function advanceWorkflow(id){
+ const w=workflows.find(x=>x.id===id);if(!w)return;
+ w.stage=Math.min(3,w.stage+1);w.updated=new Date().toLocaleString('id-ID');
+ const t=tasks.find(x=>x.id===id);
+ if(t)t.status=w.stage===3?'Menunggu approval':'Diproses';
+ if(t&&w.stage===3)t.detail='Pekerjaan ditandai siap. Silakan OWNER periksa hasil di Approval Center.';
+ save();renderAll();toast(w.stage===3?'Proyek siap. Menunggu approval OWNER.':'Tahap proyek diperbarui.');
+}
+
+function renderAll(){renderDepartments();renderWorkflows();renderTasks();renderApproval();renderEmployees();renderProducts();renderBriefs();renderSales();document.getElementById('runningCount').textContent=tasks.filter(t=>t.status==='Diproses').length}
+renderAll();
+</script>
+</body></html>
