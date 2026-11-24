@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -641,145 +640,6 @@ document.getElementById("employeeSearch")
    8. PERINTAH OWNER KE SUPABASE
    ========================================= */
 
-async function submitCommand() {
-  const input = document.getElementById("ownerCommand");
-  const command = input.value.trim();
-
-  if (!command) {
-    toast("Tulis perintah terlebih dahulu.");
-    return;
-  }
-
-  const lower = command.toLowerCase();
-
-  let employeeName = "AI HRD 01";
-
-  if (
-    lower.includes("konten") ||
-    lower.includes("caption") ||
-    lower.includes("naskah") ||
-    lower.includes("copywriting") ||
-    lower.includes("video") ||
-    lower.includes("instagram") ||
-    lower.includes("tiktok")
-  ) {
-    employeeName = "AI CREATIVE 02";
-  } else if (
-    lower.includes("produk") ||
-    lower.includes("jualan") ||
-    lower.includes("sales")
-  ) {
-    employeeName = "AI SALES 01";
-  }
-
-  const button = document.getElementById("sendCommand");
-  button.disabled = true;
-  toast("Menyimpan perintah ke Supabase...");
-
-  try {
-    const {data: taskId, error} = await sb.rpc(
-      "create_owner_task",
-      {
-        p_employee_name: employeeName,
-        p_title: command,
-        p_description: command,
-        p_priority: "normal",
-        p_due_date: null
-      }
-    );
-
-    if (error) {
-      toast("Gagal menyimpan: " + error.message);
-      return;
-    }
-
-    const id = typeof taskId === "object"
-      ? taskId?.id || taskId?.task_id
-      : taskId;
-
-    if (!id) {
-      toast("Tugas mungkin tersimpan, tetapi ID tugas tidak diterima.");
-      return;
-    }
-
-    const task = {
-      id,
-      title: command,
-      employee: employeeName,
-      status: "Tersimpan di Supabase",
-      date: new Date().toLocaleString("id-ID"),
-      result: ""
-    };
-
-    tasks.unshift(task);
-    input.value = "";
-    renderAll();
-
-    if (employeeName === "AI CREATIVE 02") {
-      toast("Tugas tersimpan. Menjalankan AI Copywriter...");
-
-      
-const { data: result, error: workerError } =
-  await sb.functions.invoke("ai-worker", {
-    body: { task_id: id }
-  });
-
-if (workerError) {
-  let detail = workerError.message;
-
-  try {
-    if (workerError.context) {
-      const response = workerError.context;
-      const errorData = await response.clone().json();
-
-      detail += " | Detail: " +
-        (errorData.details ||
-         errorData.error ||
-         JSON.stringify(errorData));
-    }
-  } catch (e) {
-    detail += " | Respons error tidak dapat dibaca.";
-  }
-
-  console.error("AI WORKER ERROR:", workerError);
-  toast("AI Worker gagal: " + detail);
-  return;
-}
-
-if (!result || !result.success) {
-  toast("AI Worker gagal: " +
-    (result?.details || result?.error || "Hasil tidak tersedia"));
-  return;
-}
-
-toast("AI berhasil membuat draft untuk persetujuan OWNER.");
-
-
-      if (workerError) {
-        task.status = "Tersimpan - AI Worker gagal";
-        renderAll();
-        toast("Tugas tersimpan, AI Worker gagal: " +
-          workerError.message);
-        return;
-      }
-
-      task.status = "Dikirim ke AI Worker";
-      task.result = result?.content || result?.text || "";
-      renderAll();
-      toast("AI Worker berhasil dipanggil. Periksa Approval Center.");
-    } else {
-      toast("Tugas tersimpan. Worker divisi ini belum diaktifkan.");
-    }
-
-  } catch (error) {
-    toast("Terjadi kesalahan: " + error.message);
-  } finally {
-    button.disabled = false;
-  }
-}
-
-document.getElementById("sendCommand")
-  .addEventListener("click", submitCommand);
 
 /* =========================================
    9. RENDER TUGAS DAN PROYEK
@@ -909,6 +769,159 @@ document.getElementById("createBrief")
 
     toast("Brief disimpan sementara di browser.");
   });
+
+async function submitCommand() {
+  const input = document.getElementById("ownerCommand");
+  const command = input.value.trim();
+
+  if (!command) {
+    toast("Tulis perintah terlebih dahulu.");
+    return;
+  }
+
+  // Semua perintah kreatif diarahkan ke AI CREATIVE 02.
+  // Tidak perlu mencocokkan nama produk.
+  const employeeName = "AI CREATIVE 02";
+
+  const button = document.getElementById("sendCommand");
+  button.disabled = true;
+
+  function formatError(value) {
+    if (value === null || value === undefined) {
+      return "Tidak ada detail kesalahan.";
+    }
+
+    if (typeof value === "string") return value;
+
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
+
+  try {
+    toast("Menyimpan perintah OWNER...");
+
+    const { data: taskId, error } = await sb.rpc(
+      "create_owner_task",
+      {
+        p_employee_name: employeeName,
+        p_title: command,
+        p_description: command,
+        p_priority: "normal",
+        p_due_date: null
+      }
+    );
+
+    if (error) {
+      console.error("CREATE TASK ERROR:", error);
+      toast("Gagal menyimpan tugas: " + error.message);
+      return;
+    }
+
+    const id = typeof taskId === "object"
+      ? taskId?.id || taskId?.task_id
+      : taskId;
+
+    if (!id) {
+      console.error("TASK ID TIDAK DITEMUKAN:", taskId);
+      toast("Tugas tidak memberikan ID. Periksa fungsi create_owner_task.");
+      return;
+    }
+
+    const task = {
+      id: id,
+      title: command,
+      employee: employeeName,
+      status: "Tersimpan - menunggu AI",
+      date: new Date().toLocaleString("id-ID"),
+      result: ""
+    };
+
+    tasks.unshift(task);
+    input.value = "";
+    renderAll();
+
+    toast("Tugas tersimpan. AI CREATIVE sedang bekerja...");
+
+    const { data: result, error: workerError } =
+      await sb.functions.invoke("ai-worker", {
+        body: { task_id: id }
+      });
+
+    if (workerError) {
+      let detail = workerError.message || "Kesalahan pemanggilan AI Worker.";
+
+      try {
+        if (workerError.context) {
+          const response = workerError.context;
+
+          if (typeof response.clone === "function") {
+            const responseText = await response.clone().text();
+
+            if (responseText) {
+              try {
+                detail += "\n" + formatError(JSON.parse(responseText));
+              } catch {
+                detail += "\n" + responseText;
+              }
+            }
+          }
+        }
+      } catch (readError) {
+        console.error("GAGAL MEMBACA RESPONS:", readError);
+      }
+
+      console.error("AI WORKER ERROR:", workerError);
+
+      task.status = "AI Worker gagal";
+      task.result = detail;
+      renderAll();
+
+      toast("AI Worker gagal: " + detail);
+      return;
+    }
+
+    console.log("AI WORKER RESPONSE:", result);
+
+    if (!result || result.success !== true) {
+      const detail = [
+        result?.stage ? "Tahap: " + result.stage : "",
+        result?.error || "AI tidak berhasil menyelesaikan tugas.",
+        result?.details ? formatError(result.details) : ""
+      ].filter(Boolean).join(" | ");
+
+      task.status = "AI Worker gagal";
+      task.result = detail;
+      renderAll();
+
+      toast("AI Worker gagal: " + detail);
+      return;
+    }
+
+    // Worker mengirim hasil melalui properti script.
+    task.status = "Menunggu persetujuan OWNER";
+    task.result = result.script || "";
+    renderAll();
+
+    toast("AI berhasil membuat draf. Periksa Approval Center.");
+
+  } catch (error) {
+    console.error("SUBMIT COMMAND ERROR:", error);
+
+    toast(
+      "Kesalahan aplikasi: " +
+      (error?.message || formatError(error))
+    );
+
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.getElementById("sendCommand")
+  .addEventListener("click", submitCommand);
 
 /* =========================================
    13. PENJUALAN MANUAL
