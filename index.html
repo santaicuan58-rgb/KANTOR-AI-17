@@ -376,8 +376,8 @@ th{color:var(--muted)}
    1. KONFIGURASI SUPABASE
    ========================================= */
 
-const SUPABASE_URL = "https://jxfuwkhizmalqlvtlkgo.supabase.co";
-const SUPABASE_KEY = "sb_publishable__7IXBatzjteugCiEn7l-nQ_JY2_gARk";
+const SUPABASE_URL = "GANTI_PROJECT_URL_ANDA";
+const SUPABASE_KEY = "GANTI_PUBLISHABLE_KEY_ANDA";
 
 const sb = window.supabase.createClient(
   SUPABASE_URL,
@@ -718,10 +718,42 @@ async function submitCommand() {
     if (employeeName === "AI CREATIVE 02") {
       toast("Tugas tersimpan. Menjalankan AI Copywriter...");
 
-      const {data: result, error: workerError} =
-        await sb.functions.invoke("ai-worker", {
-          body: {task_id: id}
-        });
+      
+const { data: result, error: workerError } =
+  await sb.functions.invoke("ai-worker", {
+    body: { task_id: id }
+  });
+
+if (workerError) {
+  let detail = workerError.message;
+
+  try {
+    if (workerError.context) {
+      const response = workerError.context;
+      const errorData = await response.clone().json();
+
+      detail += " | Detail: " +
+        (errorData.details ||
+         errorData.error ||
+         JSON.stringify(errorData));
+    }
+  } catch (e) {
+    detail += " | Respons error tidak dapat dibaca.";
+  }
+
+  console.error("AI WORKER ERROR:", workerError);
+  toast("AI Worker gagal: " + detail);
+  return;
+}
+
+if (!result || !result.success) {
+  toast("AI Worker gagal: " +
+    (result?.details || result?.error || "Hasil tidak tersedia"));
+  return;
+}
+
+toast("AI berhasil membuat draft untuk persetujuan OWNER.");
+
 
       if (workerError) {
         task.status = "Tersimpan - AI Worker gagal";
