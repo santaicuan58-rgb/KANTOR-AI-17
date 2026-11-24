@@ -25,6 +25,8 @@ main{min-width:0;padding:26px 30px 48px}.topbar{display:flex;justify-content:spa
 
 .workflow-list{display:grid;gap:12px}.workflow-card{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff}.workflow-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.workflow-title{font-size:13px;font-weight:750}.workflow-sub{font-size:11px;color:var(--muted);margin-top:5px}.workflow-progress{height:8px;background:#edf1ee;border-radius:10px;overflow:hidden;margin:13px 0 10px}.workflow-progress span{height:100%;display:block;background:linear-gradient(90deg,#39865d,#75b88b);border-radius:10px}.workflow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.workflow-step{font-size:10px;color:#849188;text-align:center}.workflow-step b{display:block;width:19px;height:19px;border-radius:50%;background:#edf1ee;color:#718078;margin:0 auto 5px;line-height:19px}.workflow-step.done{color:#28734b;font-weight:700}.workflow-step.done b{background:#dff1e5;color:#21633e}.workflow-step.current{color:#9b641b;font-weight:800}.workflow-step.current b{background:#fff0d5;color:#9b641b}.workflow-actions{display:flex;gap:7px;margin-top:12px}.workflow-actions button{font-size:11px;padding:7px 10px}
 </style>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ 
 </head>
 <body>
 <div class="app">
@@ -212,5 +214,161 @@ function advanceWorkflow(id){
 
 function renderAll(){renderDepartments();renderWorkflows();renderTasks();renderApproval();renderEmployees();renderProducts();renderBriefs();renderSales();document.getElementById('runningCount').textContent=tasks.filter(t=>t.status==='Diproses').length}
 renderAll();
+ 
+<script>
+const SUPABASE_URL = "https://jxfuwkhizmalqlvtlkgo.supabase.co";
+const SUPABASE_KEY = "sb_publishable__7IXBatzjteugCiEn7l-nQ_JY2_gARk";
+
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let employeesDB = [];
+
+document.body.insertAdjacentHTML("afterbegin", `
+<div id="ownerLogin" style="
+position:fixed;inset:0;background:#102f24;z-index:9999;
+display:flex;align-items:center;justify-content:center;
+padding:20px;font-family:Arial">
+  <div style="background:white;padding:25px;border-radius:18px;
+  width:100%;max-width:380px">
+    <h2 style="color:#123d2d;margin-top:0">KANTOR AI</h2>
+    <p>Login OWNER Control Center</p>
+    <input id="ownerEmail" type="email" placeholder="Email OWNER"
+    style="width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:9px">
+    <input id="ownerPassword" type="password" placeholder="Password"
+    style="width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:9px">
+    <button id="loginButton" style="width:100%;padding:13px;
+    background:#176044;color:white;border:0;border-radius:9px">
+    LOGIN OWNER
+    </button>
+    <p id="loginMessage" style="font-size:12px;color:#b33"></p>
+  </div>
+</div>
+`);
+
+document.querySelector(".app").style.display = "none";
+
+async function ownerLogin() {
+  const email = document.getElementById("ownerEmail").value.trim();
+  const password = document.getElementById("ownerPassword").value;
+  const message = document.getElementById("loginMessage");
+
+  if (!email || !password) {
+    message.textContent = "Email dan password wajib diisi.";
+    return;
+  }
+
+  message.textContent = "Memeriksa akun...";
+
+  const { error } = await sb.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  await startKantorAI();
+}
+
+document.getElementById("loginButton")
+  .addEventListener("click", ownerLogin);
+
+async function startKantorAI() {
+  const { data: { user }, error: sessionError } =
+    await sb.auth.getUser();
+
+  if (sessionError || !user) {
+    document.getElementById("loginMessage").textContent =
+      "Sesi login tidak ditemukan. Silakan login kembali.";
+    return;
+  }
+
+  const { data, error } = await sb
+    .from("employees")
+    .select("id,owner_id,name,division,position,job_description,daily_target,status")
+    .eq("owner_id", user.id)
+    .order("division")
+    .order("name");
+
+  if (error) {
+    document.getElementById("loginMessage").textContent =
+      "Gagal membaca karyawan: " + error.message;
+    await sb.auth.signOut();
+    return;
+  }
+
+  employeesDB = data || [];
+
+  document.getElementById("ownerLogin").style.display = "none";
+  document.querySelector(".app").style.display = "grid";
+
+  renderEmployees();
+  toast("Login OWNER berhasil. Data karyawan terhubung.");
+}
+
+function renderEmployees() {
+  const q = (
+    document.getElementById("employeeSearch")?.value || ""
+  ).toLowerCase();
+
+  const active = employeesDB.filter(e =>
+    [
+      e.name, e.division, e.position,
+      e.job_description, e.daily_target
+    ].join(" ").toLowerCase().includes(q)
+  );
+
+  const divisions = ["HRD", "Creative", "Admin", "Sales"];
+  const descriptions = {
+    HRD: "Pengelolaan tim & evaluasi",
+    Creative: "Ide, desain, video & copywriting",
+    Admin: "Data, jadwal & administrasi",
+    Sales: "Produk, kampanye & penjualan"
+  };
+
+  document.getElementById("deptCards").innerHTML =
+    divisions.map(d => {
+      const count = employeesDB.filter(e => e.division === d).length;
+      return `<div class="card dept">
+        <div class="muted">${d}</div>
+        <div class="count">${count} karyawan</div>
+        <div class="muted">${descriptions[d]}</div>
+      </div>`;
+    }).join("");
+
+  document.getElementById("employeeCards").innerHTML =
+    active.map(e => `
+      <div class="card employee">
+        <div class="employeehead">
+          <div class="staffavatar">✦</div>
+          <div>
+            <h3>${esc(e.name)}</h3>
+            <p>${esc(e.division)} · ${esc(e.position)}</p>
+          </div>
+        </div>
+        <p style="margin-top:12px">${esc(e.job_description || "")}</p>
+        <div class="employeefoot">
+          <span><i class="dot"></i>${esc(e.status)}</span>
+          <span>${esc(e.daily_target || "")}</span>
+        </div>
+      </div>
+    `).join("") ||
+    '<div class="empty">Karyawan tidak ditemukan.</div>';
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_OUT") {
+    document.querySelector(".app").style.display = "none";
+    document.getElementById("ownerLogin").style.display = "flex";
+  }
+});
+
+startKantorAI();
 </script>
-</body></html>
+</body>
+</html>
