@@ -172,8 +172,112 @@ function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.t
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 function renderDepartments(){document.getElementById('deptSummary').innerHTML=departments.map(d=>`<div class="staffrow"><div class="staffavatar">${d.name==='Tim Kreatif'?'✦':d.name==='Tim Admin'?'▤':d.name==='Tim Sales'?'↗':'♙'}</div><div class="staffmeta"><strong>${d.name}</strong><small>${d.desc}</small></div><span class="pill">${d.count} orang</span></div>`).join('')}
 function renderEmployees(){let q=(document.getElementById('employeeSearch')?.value||'').toLowerCase();document.getElementById('deptCards').innerHTML=departments.map(d=>`<div class="card dept"><div class="muted" style="font-size:12px">${d.name}</div><div class="count">${d.count} karyawan</div><div class="muted" style="font-size:11px">${d.desc}</div></div>`).join('');document.getElementById('employeeCards').innerHTML=employees.filter(e=>e.join(' ').toLowerCase().includes(q)).map(e=>`<div class="card employee"><div class="employeehead"><div class="staffavatar">${e[0]}</div><div><h3>${e[1]}</h3><p>${e[2]}</p></div></div><p style="margin-top:12px">${e[3]}</p><div class="employeefoot"><span><i class="dot"></i>Terdaftar</span><span>AI-${e[0]}</span></div></div>`).join('')}
-function submitCommand(){let v=document.getElementById('ownerCommand').value.trim();if(!v){toast('Tulis perintah terlebih dahulu.');return}let dept=v.toLowerCase().includes('konten')||v.toLowerCase().includes('video')||v.toLowerCase().includes('instagram')?'Tim Kreatif':v.toLowerCase().includes('produk')||v.toLowerCase().includes('jualan')||v.toLowerCase().includes('sales')?'Tim Sales':'HRD';let projectId=Date.now();let pic=dept==='Tim Kreatif'?'Creative Director AI':dept==='Tim Sales'?'Sales Strategist AI':'Direktur Operasional AI';tasks.unshift({id:projectId,title:v,dept,owner:pic,status:'Diproses',date:new Date().toLocaleString('id-ID'),detail:'Perintah diterima. Menunggu proses kerja agen AI.'});workflows.unshift({id:projectId,title:v,dept,owner:pic,stage:0,created:new Date().toLocaleString('id-ID'),updated:new Date().toLocaleString('id-ID')});document.getElementById('ownerCommand').value='';save();renderAll();toast('Perintah masuk ke antrean tugas.')}
-function taskHTML(t){return `<div class="task"><div class="tasktop"><strong>${esc(t.title)}</strong><span class="pill ${t.status==='Menunggu approval'?'orange':t.status==='Disetujui'?'blue':''}">${t.status}</span></div><p>${t.dept} · Penanggung jawab: ${t.owner} · ${t.date}</p><p>${esc(t.detail||'')}</p>${t.status==='Menunggu approval'?`<div class="taskactions"><button class="btn-dark" onclick="approve(${t.id})">Approve</button><button class="btn-danger" onclick="reject(${t.id})">Reject</button></div>`:''}</div>`}
+
+async function submitCommand() {
+  const input = document.getElementById('ownerCommand');
+  const v = input.value.trim();
+
+  if (!v) {
+    toast('Tulis perintah terlebih dahulu.');
+    return;
+  }
+
+  const lower = v.toLowerCase();
+
+  let dept, employeeName, pic;
+
+  if (
+    lower.includes('konten') ||
+    lower.includes('caption') ||
+    lower.includes('naskah') ||
+    lower.includes('copywriting') ||
+    lower.includes('instagram')
+  ) {
+    dept = 'Creative';
+    employeeName = 'AI CREATIVE 02';
+    pic = 'AI CREATIVE 02 - Copywriter';
+  } else if (
+    lower.includes('produk') ||
+    lower.includes('jualan') ||
+    lower.includes('sales')
+  ) {
+    dept = 'Sales';
+    employeeName = 'AI SALES 01';
+    pic = 'AI SALES 01 - Riset Produk';
+  } else {
+    dept = 'HRD';
+    employeeName = 'AI HRD 01';
+    pic = 'AI HRD 01 - Manajer HRD';
+  }
+
+  toast('Menyimpan perintah ke Supabase...');
+
+  const { data: taskId, error } = await sb.rpc(
+    'create_owner_task',
+    {
+      p_employee_name: employeeName,
+      p_title: v,
+      p_description: v,
+      p_priority: 'normal',
+      p_due_date: null
+    }
+  );
+
+  if (error) {
+    toast('Gagal menyimpan tugas: ' + error.message);
+    return;
+  }
+
+  const projectId = taskId;
+
+  tasks.unshift({
+    id: projectId,
+    title: v,
+    dept,
+    owner: pic,
+    status: 'Menunggu proses AI',
+    date: new Date().toLocaleString('id-ID'),
+    detail: 'Tersimpan di Supabase. Menunggu pengerjaan.'
+  });
+
+  workflows.unshift({
+    id: projectId,
+    title: v,
+    dept,
+    owner: pic,
+    stage: 0,
+    created: new Date().toLocaleString('id-ID'),
+    updated: new Date().toLocaleString('id-ID')
+  });
+
+  input.value = '';
+  save();
+  renderAll();
+
+  // AI Worker yang sudah tersedia saat ini
+  // baru mendukung AI CREATIVE 02 (Copywriter).
+  if (employeeName === 'AI CREATIVE 02') {
+    toast('Tugas tersimpan. Menjalankan AI Copywriter...');
+
+    const { data: result, error: workerError } =
+      await sb.functions.invoke('ai-worker', {
+        body: { task_id: projectId }
+      });
+
+    if (workerError) {
+      toast('Tugas tersimpan, tetapi AI Worker gagal: ' +
+        workerError.message);
+      return;
+    }
+
+    toast('AI selesai membuat draf. Periksa Approval Center.');
+    return;
+  }
+
+  toast('Tugas tersimpan. Menunggu aktivasi AI untuk divisi ini.');
+}
+
+ function taskHTML(t){return `<div class="task"><div class="tasktop"><strong>${esc(t.title)}</strong><span class="pill ${t.status==='Menunggu approval'?'orange':t.status==='Disetujui'?'blue':''}">${t.status}</span></div><p>${t.dept} · Penanggung jawab: ${t.owner} · ${t.date}</p><p>${esc(t.detail||'')}</p>${t.status==='Menunggu approval'?`<div class="taskactions"><button class="btn-dark" onclick="approve(${t.id})">Approve</button><button class="btn-danger" onclick="reject(${t.id})">Reject</button></div>`:''}</div>`}
 function renderTasks(){let recent=tasks.slice(0,4);document.getElementById('recentTasks').innerHTML=recent.length?recent.map(taskHTML).join(''):'<div class="empty">Belum ada tugas. Kirim perintah pertama Anda di atas.</div>';document.getElementById('allTasks').innerHTML=tasks.length?tasks.map(taskHTML).join(''):'<div class="card empty">Belum ada perintah atau tugas.</div>'}
 function renderApproval(){let pending=tasks.filter(t=>t.status==='Menunggu approval');document.getElementById('approvalCount').textContent=pending.length;document.getElementById('approvalPill').textContent=pending.length+' menunggu';document.getElementById('approvalList').innerHTML=pending.length?pending.map(taskHTML).join(''):'<div class="card empty">Belum ada pekerjaan yang menunggu approval.</div>'}
 function approve(id){let t=tasks.find(x=>x.id===id);if(t){t.status='Disetujui';let w=workflows.find(x=>x.id===id);if(w){w.stage=3;w.updated=new Date().toLocaleString('id-ID')}save();renderAll();toast('Persetujuan dicatat di prototipe.')} }
